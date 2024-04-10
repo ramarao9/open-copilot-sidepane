@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<script src="ClientGlobalContext.js.aspx" type="text/javascript"></script>
+<script>
+
+
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+
+    function getDecodedQueryStringParameter(param) {
+
+        const data = getQueryParam('data');
+
+        if (data) {
+            const decodedData = decodeURIComponent(data);
+            const decodedParams = new URLSearchParams(decodedData);
+            return decodedParams.get(param);
+        }
+
+        return null;
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to get the value of a specific query parameter
+        configureCopilotURL();
+    });
+
+
+    async function configureCopilotURL() {
+        const recordId = getDecodedQueryStringParameter('recordId').replace("{", "").replace("}", "");
+
+        let result = await Xrm.WebApi.retrieveMultipleRecords("environmentvariablevalue",
+            "?$select=value&$expand=EnvironmentVariableDefinitionId($select=schemaname)&$filter=(EnvironmentVariableDefinitionId/schemaname eq 'rkl_EnvironmentId')");
+
+        let environmentId = result.entities[0].value;
+
+        const copilotUrl = `https://copilotstudio.microsoft.com/environments/${environmentId}/bots/rkl_appointmentByParameter/webchat?__version__=2&caseId=${recordId}`
+
+        // Set the iframe's src to the URL obtained from the query parameter
+        if (copilotUrl) {
+            document.getElementById('caseCopilot').src = copilotUrl;
+        }
+    }
+
+
+</script>
+
+<style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    iframe {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<body>
+    <iframe id="caseCopilot" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+</body>
+
+</html>
