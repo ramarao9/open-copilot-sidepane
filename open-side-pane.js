@@ -3,7 +3,6 @@ var RRK = RRK || {};
 // Add a function to the namespace
 RRK.openSidePaneWR = function (paneId, paneTitle, canClosePane, webResourceName, recordId, imageSrc) {
 
-
     var pageInput = {
         pageType: "webresource",
         webresourceName: webResourceName,
